@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sport und Gesundheit · Präsentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0b1a2b;
+      color: #fff;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+    }
+
+    .presentation {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* كل سلايد تأخذ كامل الشاشة مع تمرير داخلي */
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      /* تم تغيير justify-content إلى flex-start مع padding للسماح بالتمرير */
+      justify-content: flex-start;
+      padding: 2rem 1.5rem 5rem; /* مساحة سفلية للمؤشر */
+      text-align: center;
+      background: radial-gradient(circle at 20% 30%, #1b3b4f, #0a1620);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.7s cubic-bezier(0.25, 1, 0.5, 1), 
+                  visibility 0.7s ease,
+                  transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+      transform: translateY(30px) scale(0.98);
+      box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5);
+      overflow-y: auto; /* يسمح بالتمرير داخل السلايد إذا لزم الأمر */
+      /* إخفاء شريط التمرير مع الحفاظ على الوظيفة */
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE/Edge */
+    }
+
+    .slide::-webkit-scrollbar {
+      display: none; /* Chrome/Safari */
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+      z-index: 10;
+    }
+
+    /* محتوى السلايد يتمركز عمودياً إذا كان قصيراً */
+    .slide > * {
+      flex-shrink: 0;
+    }
+
+    /* عنوان رئيسي */
+    .slide h1 {
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #ffffff, #b0e0ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 30px rgba(0, 160, 255, 0.3);
+      line-height: 1.2;
+    }
+
+    /* عنوان فرعي */
+    .slide h2 {
+      font-size: clamp(1.6rem, 4vw, 2.8rem);
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+      color: #9ad0ff;
+      text-shadow: 0 0 20px rgba(0, 160, 255, 0.3);
+      line-height: 1.3;
+    }
+
+    .slide h3 {
+      font-size: clamp(1.2rem, 3vw, 2rem);
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+      color: #e0f0ff;
+      line-height: 1.3;
+    }
+
+    /* نصوص */
+    .slide p {
+      font-size: clamp(0.95rem, 1.8vw, 1.4rem);
+      line-height: 1.55;
+      max-width: 900px;
+      margin-bottom: 0.6rem;
+      color: #d0e4f5;
+      padding: 0 0.5rem;
+    }
+
+    .slide ul {
+      text-align: left;
+      display: inline-block;
+      font-size: clamp(0.9rem, 1.6vw, 1.3rem);
+      line-height: 1.7;
+      margin: 0.5rem auto;
+      list-style: none;
+      padding-left: 0;
+      max-width: 90%;
+    }
+
+    .slide ul li {
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      text-align: left;
+    }
+
+    .slide ul li i {
+      color: #4fc3ff;
+      font-size: 1.2rem;
+      width: 24px;
+      text-align: center;
+      flex-shrink: 0;
+      margin-top: 0.2rem;
+    }
+
+    /* شبكة الصور */
+    .image-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin: 12px 0;
+      width: 100%;
+    }
+
+    .image-grid img {
+      width: clamp(90px, 18vw, 200px);
+      height: clamp(65px, 13vw, 140px);
+      object-fit: cover;
+      border-radius: 18px;
+      box-shadow: 0 15px 30px -8px rgba(0, 0, 0, 0.6), 0 0 0 2px rgba(255, 255, 255, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      filter: brightness(0.95) saturate(1.1);
+    }
+
+    .image-grid img:hover {
+      transform: scale(1.05) translateY(-4px);
+      box-shadow: 0 25px 40px -10px #0077be, 0 0 0 3px #4fc3ff;
+    }
+
+    /* صورة كبيرة */
+    .big-image {
+      width: clamp(180px, 40vw, 400px);
+      max-width: 90%;
+      height: auto;
+      border-radius: 30px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+      margin: 15px 0;
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      transition: all 0.4s ease;
+      object-fit: contain;
+    }
+
+    .big-image:hover {
+      border-color: #4fc3ff;
+      box-shadow: 0 30px 60px -12px #0077be;
+    }
+
+    /* حاوية محتوى مرنة */
+    .content-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* مؤشر التقدم */
+    .progress-indicator {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 100;
+      background: rgba(0, 20, 40, 0.75);
+      backdrop-filter: blur(12px);
+      padding: 10px 20px;
+      border-radius: 60px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.25);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .dot.active {
+      background: #4fc3ff;
+      box-shadow: 0 0 15px #4fc3ff;
+      transform: scale(1.3);
+    }
+
+    .dot:hover {
+      background: #a0d8ff;
+    }
+
+    /* أسهم التنقل */
+    .nav-hint {
+      position: fixed;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 1.8rem;
+      z-index: 90;
+    }
+
+    .nav-hint i {
+      cursor: pointer;
+      transition: color 0.3s, transform 0.2s;
+    }
+
+    .nav-hint i:hover {
+      color: #4fc3ff;
+      transform: scale(1.2);
+    }
+
+    /* تأثيرات خاصة */
+    .heartbeat-icon {
+      font-size: clamp(2rem, 5vw, 4rem);
+      color: #ff4d6d;
+      margin: 10px 0;
+      animation: heartbeat 1.5s ease-in-out infinite;
+    }
+
+    @keyframes heartbeat {
+      0% { transform: scale(1); }
+      14% { transform: scale(1.2); }
+      28% { transform: scale(1); }
+      42% { transform: scale(1.15); }
+      70% { transform: scale(1); }
+    }
+
+    /* صناديق المقارنة */
+    .compare-box {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 15px 0;
+      width: 100%;
+    }
+
+    .compare-box > div {
+      padding: 15px 20px;
+      border-radius: 24px;
+      min-width: 200px;
+      flex: 1 1 200px;
+      max-width: 300px;
+    }
+
+    .compare-box h3 {
+      font-size: clamp(1rem, 2vw, 1.5rem);
+      margin-bottom: 8px;
+    }
+
+    .compare-box ul {
+      font-size: clamp(0.85rem, 1.4vw, 1.1rem);
+    }
+
+    /* شاشات صغيرة */
+    @media (max-width: 768px) {
+      .slide { padding: 1.5rem 1rem 4.5rem; }
+      .slide h1 { font-size: 1.9rem; }
+      .slide h2 { font-size: 1.5rem; }
+      .slide p { font-size: 0.95rem; }
+      .image-grid img { width: 80px; height: 60px; }
+      .big-image { width: 220px; }
+      .nav-hint { display: none; }
+      .progress-indicator { padding: 8px 14px; gap: 7px; bottom: 12px; }
+      .dot { width: 8px; height: 8px; }
+    }
+
+    @media (max-width: 480px) {
+      .slide { padding: 1rem 0.8rem 4rem; }
+      .slide h1 { font-size: 1.6rem; }
+      .slide h2 { font-size: 1.3rem; }
+      .slide h3 { font-size: 1.1rem; }
+      .slide p { font-size: 0.85rem; }
+      .image-grid img { width: 65px; height: 50px; }
+      .big-image { width: 180px; }
+    }
+
+    /* في الشاشات القصيرة جداً (ارتفاع أقل من 600px) */
+    @media (max-height: 600px) {
+      .slide { padding: 0.8rem 1rem 3.5rem; }
+      .slide h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+      .slide h2 { font-size: 1.4rem; margin-bottom: 0.4rem; }
+      .slide p { font-size: 0.9rem; margin-bottom: 0.3rem; }
+      .image-grid img { width: 70px; height: 50px; }
+      .big-image { width: 160px; margin: 8px 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="presentation" id="presentation">
+    <!-- Slide 1: Titel -->
+    <section class="slide active" data-index="0">
+      <div class="content-wrapper">
+        <h1>Sport und Gesundheit</h1>
+        <p style="font-size: clamp(1rem, 2.2vw, 1.8rem); margin-top: 0.3rem; color: #b0d8ff;">Fitness, Wohlbefinden und Lebensqualität</p>
+        <div class="image-grid">
+          <img src="https://images.pexels.com/photos/114296/pexels-photo-114296.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Fußball">
+          <img src="https://images.pexels.com/photos/416778/pexels-photo-416778.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Fahrrad fahren">
+          <img src="https://images.pexels.com/photos/2402777/pexels-photo-2402777.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Joggen">
+          <img src="https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Schwimmen">
+        </div>
+        <p style="margin-top: 1rem; font-size: clamp(0.9rem, 1.5vw, 1.2rem); color: #a0c0d0;">Vielen Dank fürs Zuhören!</p>
+      </div>
+    </section>
+
+    <!-- Slide 2: Einleitung -->
+    <section class="slide" data-index="1">
+      <div class="content-wrapper">
+        <h2>1. Einleitung</h2>
+        <p>Hallo zusammen, wie geht es euch?</p>
+        <p>Heute möchte ich über das Thema „Sport und Gesundheit“ sprechen.</p>
+        <p>Es gibt viele verschiedene Sportarten, zum Beispiel Fußball, Basketball, Tennis, Schwimmen und Laufen.</p>
+        <p><strong>Sport ist ein wichtiger Teil unseres Lebens.</strong> Er ist gut für unseren Körper und unsere Gesundheit.</p>
+        <div class="image-grid">
+          <img src="https://images.pexels.com/photos/114296/pexels-photo-114296.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Fußball">
+          <img src="https://images.pexels.com/photos/863988/pexels-photo-863988.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Schwimmen">
+          <img src="https://images.pexels.com/photos/1752757/pexels-photo-1752757.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Basketball">
+          <img src="https://images.pexels.com/photos/2402777/pexels-photo-2402777.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Laufen">
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 3: Interaktion -->
+    <section class="slide" data-index="2">
+      <div class="content-wrapper">
+        <h2>2. Interaktion mit den Kollegen</h2>
+        <p style="font-size: clamp(1rem, 2vw, 1.8rem); color: #9ad0ff;">Frage an das Publikum</p>
+        <p>Aber bevor ich anfange, habe ich eine Frage an euch:</p>
+        <p style="font-size: clamp(1.1rem, 2.2vw, 2rem); font-weight: 600; margin: 10px 0;">„Wer von euch macht gern Sport?“</p>
+        <p>Welche Sportart ist eure Lieblingssportart?</p>
+        <p>Spielt ihr lieber Fußball, schwimmt ihr gern oder macht ihr eine andere Sportart?</p>
+        <p>Und Herr Sameh, ich möchte deine Antwort hören: Warum magst du diese Sportart?</p>
+        <p style="color: #7fbf7f;">→ Vielen Dank für deine Antwort!</p>
+        <div class="image-grid">
+          <img src="https://images.pexels.com/photos/114296/pexels-photo-114296.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Stadion">
+          <img src="https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Freude am Sport">
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 4: Herz & Muskeln -->
+    <section class="slide" data-index="3">
+      <div class="content-wrapper">
+        <h2>3. Warum ist Sport wichtig?</h2>
+        <h3>Erstens: Herz und Muskeln</h3>
+        <p>Erstens ist Sport gut für unser Herz und unsere Muskeln.</p>
+        <p>Er stärkt den Körper nachhaltig.</p>
+        <div style="display: flex; gap: 20px; align-items: center; justify-content: center; flex-wrap: wrap; margin: 15px 0;">
+          <div style="text-align: center;">
+            <i class="fas fa-heart heartbeat-icon"></i>
+            <p style="font-size: clamp(0.85rem, 1.3vw, 1.2rem);">Starkes Herz</p>
+          </div>
+          <div style="text-align: center;">
+            <i class="fas fa-dumbbell" style="font-size: clamp(2rem, 4vw, 4rem); color: #f0b27a; margin: 10px 0;"></i>
+            <p style="font-size: clamp(0.85rem, 1.3vw, 1.2rem);">Muskelaufbau</p>
+          </div>
+        </div>
+        <img src="https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Herz und Muskeln" style="width: clamp(150px, 30vw, 300px); border-radius: 24px; margin-top: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+      </div>
+    </section>
+
+    <!-- Slide 5: Stressabbau -->
+    <section class="slide" data-index="4">
+      <div class="content-wrapper">
+        <h2>3. Warum ist Sport wichtig?</h2>
+        <h3>Zweitens: Stressabbau und Wohlbefinden</h3>
+        <p>Zweitens hilft Sport gegen Stress und macht uns fit für den Alltag.</p>
+        <p>Außerdem kann Sport unsere Stimmung verbessern.</p>
+        <p>Menschen, die regelmäßig Sport machen, fühlen sich oft besser.</p>
+        <p><strong>Deshalb sollten wir uns mehr bewegen!</strong></p>
+        <div class="image-grid">
+          <img src="https://images.pexels.com/photos/1051838/pexels-photo-1051838.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Meditation">
+          <img src="https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Freude">
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 6: Fußball -->
+    <section class="slide" data-index="5">
+      <div class="content-wrapper">
+        <h2>4. Meine Lieblingssportart</h2>
+        <h3 style="color: #ffd966;">Fußball</h3>
+        <p>Meine Lieblingssportart ist Fußball.</p>
+        <p>Ich spiele nicht oft Fußball, aber ich sehe gern Fußball im Fernsehen.</p>
+        <p>Besonders interessant finde ich wichtige Spiele und große Turniere.</p>
+        <p>Ich finde Fußball toll, weil er viele Menschen zusammenbringt.</p>
+        <img src="https://images.pexels.com/photos/114296/pexels-photo-114296.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Fußballstadion" class="big-image">
+        <div style="margin-top: 10px;">
+          <p style="font-size: clamp(0.95rem, 1.6vw, 1.4rem); font-weight: 500; color: #9ad0ff;">Fragen an euch:</p>
+          <ul style="max-width: 95%;">
+            <li><i class="fas fa-tv"></i> Schaut ihr gern Fußball im Fernsehen oder spielt ihr lieber selbst?</li>
+            <li><i class="fas fa-users"></i> Mit wem macht ihr am liebsten Sport?</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 7: Alltag & Ernährung -->
+    <section class="slide" data-index="6">
+      <div class="content-wrapper">
+        <h2>5. Sport im Alltag und Ernährung</h2>
+        <p>Man muss nicht jeden Tag ins Fitnessstudio gehen.</p>
+        <p>Man kann auch spazieren gehen, Fahrrad fahren oder zu Hause Übungen machen.</p>
+        <p>Außerdem sollten wir genug Wasser trinken, gesund essen und genug schlafen.</p>
+        <div class="image-grid">
+          <img src="https://images.pexels.com/photos/416778/pexels-photo-416778.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Spazieren">
+          <img src="https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Fahrrad fahren">
+          <img src="https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Gesundes Essen">
+          <img src="https://images.pexels.com/photos/3270223/pexels-photo-3270223.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Wasser trinken">
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 8: Vorteile / Nachteile -->
+    <section class="slide" data-index="7">
+      <div class="content-wrapper">
+        <h2>6. Vorteile und Nachteile</h2>
+        <p style="font-size: clamp(1rem, 2vw, 1.8rem); font-weight: 600; color: #ffd966;">Balance ist wichtig!</p>
+        <div class="compare-box">
+          <div style="background: rgba(0, 100, 0, 0.2); border: 1px solid #4fc3ff;">
+            <h3 style="color: #7fbf7f;">Vorteile</h3>
+            <ul style="font-size: clamp(0.8rem, 1.3vw, 1.1rem);">
+              <li><i class="fas fa-check-circle" style="color: #7fbf7f;"></i> Sport macht uns fit.</li>
+              <li><i class="fas fa-check-circle" style="color: #7fbf7f;"></i> Sport stärkt unsere Muskeln.</li>
+            </ul>
+          </div>
+          <div style="background: rgba(100, 0, 0, 0.2); border: 1px solid #ff6b6b;">
+            <h3 style="color: #ff6b6b;">Nachteile / Risiken</h3>
+            <ul style="font-size: clamp(0.8rem, 1.3vw, 1.1rem);">
+              <li><i class="fas fa-exclamation-triangle" style="color: #ff6b6b;"></i> Wenn man zu viel trainiert, kann man sich verletzen.</li>
+            </ul>
+          </div>
+        </div>
+        <p><strong>Deshalb sollte man auf seinen Körper achten!</strong></p>
+        <img src="https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Verletzung" style="width: clamp(120px, 22vw, 250px); border-radius: 24px; margin-top: 10px; border: 2px solid #ff6b6b;">
+        <p style="font-size: clamp(0.8rem, 1.1vw, 1rem); color: #a0c0d0;">Regelmäßiges Training + auf den Körper hören</p>
+      </div>
+    </section>
+
+    <!-- Slide 9: Schluss -->
+    <section class="slide" data-index="8">
+      <div class="content-wrapper">
+        <h2>7. Schluss</h2>
+        <p style="font-size: clamp(1.1rem, 2.2vw, 2rem); font-weight: 600; margin-bottom: 10px;">Vielen Dank fürs Zuhören!</p>
+        <p>Meiner Meinung nach sollte jeder Mensch Sport machen, weil Gesundheit sehr wichtig ist.</p>
+        <p>Man muss kein Profisportler sein – schon ein bisschen Bewegung jeden Tag kann helfen.</p>
+        <p>Ich finde, dass Sport nicht nur gut für den Körper, sondern auch gut für die Seele ist.</p>
+        <p>Ich hoffe, dass euch meine Präsentation gefallen hat.</p>
+        <p style="font-size: clamp(1rem, 1.8vw, 1.6rem); color: #9ad0ff; margin-top: 10px;">Habt ihr noch Fragen?</p>
+        <img src="https://images.pexels.com/photos/2402777/pexels-photo-2402777.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Joggen im Wald" class="big-image">
+      </div>
+    </section>
+  </div>
+
+  <div class="progress-indicator" id="progressIndicator"></div>
+
+  <div class="nav-hint">
+    <i class="fas fa-chevron-up" id="prevHint"></i>
+    <i class="fas fa-chevron-down" id="nextHint"></i>
+  </div>
+
+  <script>
+    (function() {
+      const slides = document.querySelectorAll('.slide');
+      const totalSlides = slides.length;
+      let currentIndex = 0;
+      let isAnimating = false;
+      const animationDuration = 800;
+
+      const progressContainer = document.getElementById('progressIndicator');
+      slides.forEach((_, i) => {
+        const dot = document.createElement('div');
+        dot.classList.add('dot');
+        if (i === 0) dot.classList.add('active');
+        dot.dataset.index = i;
+        dot.addEventListener('click', () => goToSlide(i));
+        progressContainer.appendChild(dot);
+      });
+
+      const dots = document.querySelectorAll('.dot');
+
+      function updateDots(index) {
+        dots.forEach((dot, i) => {
+          dot.classList.toggle('active', i === index);
+        });
+      }
+
+      function goToSlide(index) {
+        if (isAnimating) return;
+        if (index < 0) index = 0;
+        if (index >= totalSlides) index = totalSlides - 1;
+        if (index === currentIndex) return;
+
+        isAnimating = true;
+
+        const currentSlide = slides[currentIndex];
+        currentSlide.classList.remove('active');
+
+        const nextSlide = slides[index];
+        nextSlide.classList.add('active');
+
+        // إعادة تعيين التمرير إلى الأعلى عند تغيير السلايد
+        nextSlide.scrollTop = 0;
+
+        currentIndex = index;
+        updateDots(currentIndex);
+
+        setTimeout(() => {
+          isAnimating = false;
+        }, animationDuration);
+      }
+
+      function nextSlide() {
+        if (currentIndex < totalSlides - 1) {
+          goToSlide(currentIndex + 1);
+        }
+      }
+
+      function prevSlide() {
+        if (currentIndex > 0) {
+          goToSlide(currentIndex - 1);
+        }
+      }
+
+      // Keyboard
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === ' ') {
+          e.preventDefault();
+        }
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') {
+          nextSlide();
+        } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+          prevSlide();
+        }
+      });
+
+      // Wheel - مع منع التمرير الداخلي للسلايد
+      let wheelTimeout = null;
+      window.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        if (isAnimating) return;
+        
+        if (wheelTimeout) return;
+        wheelTimeout = setTimeout(() => {
+          wheelTimeout = null;
+        }, 300);
+
+        if (e.deltaY > 0) {
+          nextSlide();
+        } else if (e.deltaY < 0) {
+          prevSlide();
+        }
+      }, { passive: false });
+
+      document.getElementById('nextHint').addEventListener('click', nextSlide);
+      document.getElementById('prevHint').addEventListener('click', prevSlide);
+
+      // Touch
+      let touchStartY = 0;
+      let touchEndY = 0;
+      window.addEventListener('touchstart', (e) => {
+        touchStartY = e.changedTouches[0].screenY;
+      }, { passive: true });
+
+      window.addEventListener('touchend', (e) => {
+        touchEndY = e.changedTouches[0].screenY;
+        const diff = touchStartY - touchEndY;
+        if (Math.abs(diff) > 50) {
+          if (diff > 0) {
+            nextSlide();
+          } else {
+            prevSlide();
+          }
+        }
+      }, { passive: true });
+
+      // إبقاء التمرير في الصفحة الرئيسية مغلقاً
+      window.addEventListener('scroll', () => {
+        window.scrollTo(0, 0);
+      });
+
+      slides.forEach((slide, i) => {
+        if (i === 0) slide.classList.add('active');
+        else slide.classList.remove('active');
+      });
+      updateDots(0);
+    })();
+  </script>
+</body>
+</html>
